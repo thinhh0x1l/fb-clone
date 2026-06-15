@@ -43,14 +43,6 @@ spring:
       port: 6379
       timeout: 60000
 
-  # Cấu hình JWT
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080
-          jws-algorithms: RS256
-
   # Cấu hình Jackson
   jackson:
     default-property-inclusion: non_null

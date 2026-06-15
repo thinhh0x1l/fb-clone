@@ -33,7 +33,6 @@ public class MultiTierCache {
         this.localCache = Caffeine.newBuilder()
                 .maximumSize(LOCAL_CACHE_MAX_SIZE)
                 .expireAfterWrite(LOCAL_CACHE_TTL_MINUTES, TimeUnit.MINUTES)
-                .recordStats()
                 .build();
     }
 
@@ -169,6 +168,7 @@ public class MultiTierCache {
     /**
      * Lấy thống kê cache
      */
+    @SuppressWarnings("deprecation")
     public String getStats() {
         var stats = localCache.stats();
         return String.format(

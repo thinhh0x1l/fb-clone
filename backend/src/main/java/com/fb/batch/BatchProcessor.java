@@ -68,10 +68,8 @@ public class BatchProcessor {
      * Cập nhật thống kê cho một người dùng
      */
     private void updateUserStats(Long userId) {
-        // Cập nhật số lượng bài viết
-        // Cập nhật số lượng bạn bè
-        // Cập nhật số lượng người theo dõi
-        // Cập nhật điểm tương tác
+        long postCount = postRepository.countByUserId(userId);
+        cacheService.set("stats:posts:" + userId, postCount, 1, java.util.concurrent.TimeUnit.HOURS);
     }
 
     /**

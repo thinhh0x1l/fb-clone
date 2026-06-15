@@ -250,15 +250,42 @@ public class CacheService {
 
     // Pattern operations
     public Set<String> keys(String pattern) {
-        return redisTemplate.keys(pattern);
+        Set<String> keys = new java.util.HashSet<>();
+        var scanOptions = org.springframework.data.redis.core.ScanOptions.scanOptions()
+                .match(pattern)
+                .count(100)
+                .build();
+        try (var cursor = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions)) {
+            while (cursor.hasNext()) {
+                keys.add(new String(cursor.next()));
+            }
+        } catch (Exception e) {
+            log.error("Error scanning keys with pattern: {}", pattern, e);
+        }
+        return keys;
     }
 
     public Long deleteByPattern(String pattern) {
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys != null && !keys.isEmpty()) {
-            return redisTemplate.delete(keys);
+        Set<String> keysToDelete = new java.util.HashSet<>();
+        var scanOptions = org.springframework.data.redis.core.ScanOptions.scanOptions()
+                .match(pattern)
+                .count(100)
+                .build();
+        try (var cursor = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions)) {
+            while (cursor.hasNext()) {
+                keysToDelete.add(new String(cursor.next()));
+                if (keysToDelete.size() >= 1000) {
+                    redisTemplate.delete(keysToDelete);
+                    keysToDelete.clear();
+                }
+            }
+            if (!keysToDelete.isEmpty()) {
+                redisTemplate.delete(keysToDelete);
+            }
+        } catch (Exception e) {
+            log.error("Error deleting keys by pattern: {}", pattern, e);
         }
-        return 0L;
+        return (long) keysToDelete.size();
     }
 
     // Atomic operations
@@ -276,9 +303,6 @@ public class CacheService {
     }
 
     public void clearAll() {
-        Set<String> keys = redisTemplate.keys("*");
-        if (keys != null && !keys.isEmpty()) {
-            redisTemplate.delete(keys);
-        }
+        deleteByPattern("*");
     }
 }

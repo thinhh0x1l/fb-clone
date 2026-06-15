@@ -200,8 +200,23 @@ public class TrendingEngine {
      * Lấy hashtag gần đây
      */
     private Set<String> getRecentHashtags() {
-        // TODO: Lấy từ khóa sử dụng hashtag
-        return Set.of();
+        Set<String> hashtags = new java.util.HashSet<>();
+        var scanOptions = org.springframework.data.redis.core.ScanOptions.scanOptions()
+                .match(HASHTAG_USAGE_KEY + "*")
+                .count(100)
+                .build();
+        try (var cursor = redisTemplate.getConnectionFactory().getConnection().scan(scanOptions)) {
+            while (cursor.hasNext()) {
+                String key = new String(cursor.next());
+                String hashtag = key.substring(HASHTAG_USAGE_KEY.length());
+                if (!hashtag.isEmpty()) {
+                    hashtags.add(hashtag);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error scanning hashtag keys", e);
+        }
+        return hashtags;
     }
 
     /**

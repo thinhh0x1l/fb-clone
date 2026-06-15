@@ -174,7 +174,7 @@ public class MinioStorageService implements StorageService {
     @Override
     public URL getFileUrl(String fileUrl) {
         try {
-            return new URL(fileUrl);
+            return java.net.URI.create(fileUrl).toURL();
         } catch (Exception e) {
             throw new RuntimeException("Invalid file URL", e);
         }

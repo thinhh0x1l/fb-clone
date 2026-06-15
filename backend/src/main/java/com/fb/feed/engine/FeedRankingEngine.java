@@ -5,11 +5,13 @@ import com.fb.post.model.Post;
 import com.fb.auth.model.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +34,11 @@ public class FeedRankingEngine {
     private final ContentScorer contentScorer;
     private final RecencyScorer recencyScorer;
     private final DiversityScorer diversityScorer;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String SEEN_POSTS_KEY = "feed:seen:";
+    private static final String HIDDEN_POSTS_KEY = "feed:hidden:";
+    private static final String CLOSE_FRIENDS_KEY = "friends:close:";
 
     /**
      * Xếp hạng bài viết cho bảng tin của người dùng
@@ -101,8 +108,9 @@ public class FeedRankingEngine {
         }
 
         // Điểm thưởng cho bài viết từ bạn bè thân thiết
-        // (được xử lý bởi điểm quan hệ, nhưng điểm thưởng thêm cho bạn thân)
-        // TODO: Kiểm tra xem người dùng có trong danh sách "Bạn bè thân thiết" không
+        if (isCloseFriend(user, post.getUser())) {
+            boost *= 1.3;
+        }
 
         // Phạt cho bài viết người dùng đã xem
         if (hasUserSeenPost(user, post)) {
@@ -121,16 +129,24 @@ public class FeedRankingEngine {
      * Kiểm tra người dùng đã xem bài viết chưa
      */
     private boolean hasUserSeenPost(User user, Post post) {
-        // TODO: Kiểm tra Redis cho các bài viết đã xem
-        return false;
+        Boolean seen = redisTemplate.opsForSet().isMember(SEEN_POSTS_KEY + user.getId(), post.getId().toString());
+        return Boolean.TRUE.equals(seen);
     }
 
     /**
      * Kiểm tra người dùng đã ẩn bài viết chưa
      */
     private boolean hasUserHiddenPost(User user, Post post) {
-        // TODO: Kiểm tra Redis cho các bài viết đã ẩn
-        return false;
+        Boolean hidden = redisTemplate.opsForSet().isMember(HIDDEN_POSTS_KEY + user.getId(), post.getId().toString());
+        return Boolean.TRUE.equals(hidden);
+    }
+
+    /**
+     * Kiểm tra người dùng có trong danh sách bạn bè thân thiết không
+     */
+    private boolean isCloseFriend(User user, User author) {
+        Boolean isClose = redisTemplate.opsForSet().isMember(CLOSE_FRIENDS_KEY + user.getId(), author.getId().toString());
+        return Boolean.TRUE.equals(isClose);
     }
 
     /**

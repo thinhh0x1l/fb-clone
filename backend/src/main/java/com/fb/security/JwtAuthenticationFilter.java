@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,15 +20,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Filter xác thực JWT
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtDecoder jwtDecoder;
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
     @Override
@@ -40,9 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt)) {
-                Jwt decodedJwt = jwtDecoder.decode(jwt);
-                Long userId = Long.parseLong(decodedJwt.getSubject());
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+                Long userId = jwtTokenProvider.getUserIdFromToken(jwt);
 
                 User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy người dùng"));
@@ -71,16 +65,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
-    /**
-     * Lấy userId từ request
-     */
-    public Long getUserIdFromRequest(HttpServletRequest request) {
-        Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return Long.parseLong(jwt.getSubject());
+    public Long getUserIdFromRequest() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof User user) {
+            return user.getId();
+        }
+        return null;
     }
 
     /**
-     * WebSocket Principal cho WebSocket authentication
+     * WebSocket Principal for WebSocket authentication
      */
     public static class WebSocketPrincipal implements java.security.Principal {
         private final Long userId;

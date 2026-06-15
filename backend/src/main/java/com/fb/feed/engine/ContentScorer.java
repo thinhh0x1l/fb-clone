@@ -149,8 +149,13 @@ public class ContentScorer {
      * Originality scoring
      */
     private double getOriginalityScore(Post post) {
-        // TODO: Check if content is original or copied
-        // For now, assume original
+        if (post.getContent() == null || post.getContent().isBlank()) return 0.5;
+
+        if (post.getContent().length() > 50 &&
+            (post.getContent().startsWith("http") ||
+             post.getContent().matches(".*\\b(share|repost|via)\\b.*"))) {
+            return 0.3;
+        }
         return 0.8;
     }
 }

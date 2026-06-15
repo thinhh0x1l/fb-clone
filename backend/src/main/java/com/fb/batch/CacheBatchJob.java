@@ -26,7 +26,8 @@ public class CacheBatchJob {
     public CompletableFuture<Void> warmupCache(Set<String> keys) {
         log.info("Warming up cache for {} keys", keys.size());
         
-        // TODO: Fetch data and populate cache
+        // TODO: Fetch data from DB and populate cache for each key pattern
+        // e.g., for user keys: userRepository.findById(extractId(key))
         
         log.info("Cache warmup complete");
         return CompletableFuture.completedFuture(null);
