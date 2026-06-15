@@ -1,0 +1,108 @@
+# Cấu hình ứng dụng
+spring:
+  application:
+    name: facebook-backend
+
+  profiles:
+    active: dev
+
+  # Cấu hình kết nối database
+  datasource:
+    url: jdbc:postgresql://localhost:5432/facebook
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 5000
+      leak-detection-threshold: 60000
+
+  # Cấu hình JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_batch_fetch_size: 20
+
+  # Cấu hình Flyway
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  # Cấu hình Redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
+
+  # Cấu hình JWT
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080
+          jws-algorithms: RS256
+
+  # Cấu hình Jackson
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+  # Cấu hình Virtual Threads (Java 21)
+  threads:
+    virtual:
+      enabled: true
+
+# Cấu hình server
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+# Cấu hình MinIO
+minio:
+  endpoint: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket-name: facebook-media
+
+# Cấu hình JWT
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-change-in-production}
+  access-token-expiration: 900000  # 15 phút
+  refresh-token-expiration: 604800000  # 7 ngày
+
+# Cấu hình HashId
+app:
+  hashid:
+    salt: ${HASHID_SALT:facebook-clone-salt-2024}
+
+# Cấu hình mã hóa tin nhắn (QUAN TRỌNG: Phải thay đổi ở production!)
+app.encryption:
+  secret-key: ${MESSAGE_ENCRYPTION_KEY:facebook-clone-aes256-secret-key-32bytes!}
+
+# Cấu hình Caffeine Cache
+spring.cache:
+  cache-names:
+    - users
+    - posts
+    - feed
+  caffeine:
+    spec: maximumSize=10000,expireAfterWrite=5m
+
+# Cấu hình logging
+logging:
+  level:
+    com.fb: DEBUG
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{correlationId}] %-5level %logger{36} - %msg%n"

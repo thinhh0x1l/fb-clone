@@ -1,0 +1,74 @@
+// Facebook Blue
+$color-primary: #1877f2;
+$color-primary-hover: #166fe5;
+$color-primary-light: #e7f3ff;
+
+// Status Colors
+$color-success: #42b72a;
+$color-success-hover: #36a420;
+$color-warning: #f7b928;
+$color-danger: #fa383e;
+$color-danger-hover: #e5353b;
+$color-info: #909399;
+
+// Neutral Colors
+$color-text-primary: #050505;
+$color-text-regular: #65676b;
+$color-text-secondary: #8a8d91;
+$color-text-placeholder: #bcc0c4;
+
+// Background Colors
+$bg-color: #f0f2f5;
+$bg-color-page: #ffffff;
+$bg-color-overlay: rgba(0, 0, 0, 0.4);
+
+// Border
+$border-color: #dddfe2;
+$border-color-light: #e4e6eb;
+$border-radius-base: 8px;
+$border-radius-sm: 4px;
+$border-radius-lg: 12px;
+$border-radius-round: 50%;
+
+// Shadow
+$box-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+$box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.15);
+$box-shadow-lg: 0 12px 28px 0 rgba(0, 0, 0, 0.2);
+
+// Font
+$font-family-base: 'Segoe UI', Helvetica, Arial, sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 13px;
+$font-size-base: 15px;
+$font-size-lg: 17px;
+$font-size-xl: 20px;
+$font-size-xxl: 24px;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Breakpoints
+$breakpoint-xs: 480px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
+
+// Layout
+$sidebar-width: 280px;
+$header-height: 56px;
+$chat-width: 328px;
+
+// Z-index
+$z-dropdown: 1000;
+$z-sticky: 1020;
+$z-fixed: 1030;
+$z-modal-backdrop: 1040;
+$z-modal: 1050;
+$z-popover: 1060;
+$z-tooltip: 1070;

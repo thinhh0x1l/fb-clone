@@ -1,0 +1,4 @@
+# Gradle-like wrapper for running backend
+# Usage: ./mvnw spring-boot:run
+
+MAVEN_OPTS="-Xmx1024m" ./mvnw "$@"
