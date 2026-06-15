@@ -85,6 +85,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { usePostStore } from '@/stores/post'
 import CommentList from '@/components/comment/CommentList.vue'
 import type { Post } from '@/types'
 import dayjs from 'dayjs'
@@ -97,9 +98,10 @@ const props = defineProps<{
 }>()
 
 const authStore = useAuthStore()
+const postStore = usePostStore()
 const showComments = ref(false)
-const isLiked = ref(false)
 
+const isLiked = computed(() => !!props.post.likedByMe)
 const isOwner = computed(() => authStore.user?.id === props.post.user.id)
 
 function formatDate(date: string) {
@@ -107,8 +109,7 @@ function formatDate(date: string) {
 }
 
 async function toggleLike() {
-  isLiked.value = !isLiked.value
-  // TODO: Call API to toggle like
+  await postStore.toggleLike(props.post.id)
 }
 </script>
 

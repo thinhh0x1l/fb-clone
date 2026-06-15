@@ -54,7 +54,7 @@
       </div>
       <div class="profile-main">
         <CreatePost v-if="isOwner" />
-        <NewsFeed />
+        <NewsFeed :user-id="route.params.id as string" />
       </div>
     </div>
   </div>
@@ -64,6 +64,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { userApi } from '@/api/user'
 import CreatePost from '@/components/post/CreatePost.vue'
 import NewsFeed from '@/components/feed/NewsFeed.vue'
 import type { User } from '@/types'
@@ -78,8 +79,12 @@ const isOwner = computed(() => {
 })
 
 onMounted(async () => {
-  // TODO: Fetch user profile
-  user.value = authStore.user
+  const userId = route.params.id as string
+  if (userId && userId !== authStore.user?.id) {
+    user.value = await userApi.getById(userId)
+  } else {
+    user.value = authStore.user
+  }
 })
 </script>
 

@@ -2,7 +2,7 @@
   <div class="notification-page">
     <div class="page-header">
       <h2>Notifications</h2>
-      <el-button link>Mark all as read</el-button>
+      <el-button link @click="markAllAsRead">Mark all as read</el-button>
     </div>
     <div class="notification-list">
       <div
@@ -14,7 +14,7 @@
         <el-avatar :size="56" :src="notification.actor?.avatar">
           {{ notification.actor?.displayName?.charAt(0) }}
         </el-avatar>
-        <div class="notification-content">
+        <div class="notification-content" @click="notificationStore.markAsRead(notification.id)">
           <p>{{ notification.message }}</p>
           <span class="notification-time">{{ formatDate(notification.createdAt) }}</span>
         </div>
@@ -25,17 +25,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { Notification } from '@/types'
+import { onMounted } from 'vue'
+import { useNotificationStore } from '@/stores/notification'
+import { storeToRefs } from 'pinia'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(relativeTime)
 
-const notifications = ref<Notification[]>([])
+const notificationStore = useNotificationStore()
+const { notifications } = storeToRefs(notificationStore)
+
+onMounted(() => {
+  notificationStore.fetchNotifications()
+  notificationStore.fetchUnreadCount()
+})
 
 function formatDate(date: string) {
   return dayjs(date).fromNow()
+}
+
+async function markAllAsRead() {
+  await notificationStore.markAllAsRead()
 }
 </script>
 

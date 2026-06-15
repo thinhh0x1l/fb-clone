@@ -54,15 +54,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { Conversation } from '@/types'
+import { ref, onMounted } from 'vue'
+import { useMessageStore } from '@/stores/message'
+import { storeToRefs } from 'pinia'
 
+const messageStore = useMessageStore()
+const { conversations, currentConversation: selectedConversation } = storeToRefs(messageStore)
 const searchQuery = ref('')
-const conversations = ref<Conversation[]>([])
-const selectedConversation = ref<Conversation | null>(null)
 
-function selectConversation(conv: Conversation) {
-  selectedConversation.value = conv
+onMounted(() => {
+  messageStore.fetchConversations()
+})
+
+async function selectConversation(conv: typeof conversations.value[0]) {
+  await messageStore.selectConversation(conv.id)
 }
 </script>
 

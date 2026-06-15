@@ -32,4 +32,8 @@ export const userApi = {
   updateCoverPhoto(coverPhotoUrl: string) {
     return request.put('/users/me/cover', null, { params: { coverPhotoUrl } }).then((res) => res.data)
   },
+
+  search(query: string, params?: { page?: number; size?: number }) {
+    return request.get('/users/search', { params: { q: query, ...params } }).then((res) => res.data)
+  },
 }

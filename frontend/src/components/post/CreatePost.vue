@@ -77,9 +77,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { usePostStore } from '@/stores/post'
 import { ElMessage } from 'element-plus'
 
 const authStore = useAuthStore()
+const postStore = usePostStore()
 const showDialog = ref(false)
 const content = ref('')
 const visibility = ref('PUBLIC')
@@ -96,7 +98,7 @@ async function handlePost() {
   
   loading.value = true
   try {
-    // TODO: Call API to create post
+    await postStore.createPost({ content: content.value, visibility: visibility.value })
     ElMessage.success('Post created successfully')
     handleClose()
   } catch (error) {

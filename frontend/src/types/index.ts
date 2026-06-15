@@ -24,6 +24,7 @@ export interface Post {
   likesCount: number
   commentsCount: number
   sharesCount: number
+  likedByMe?: boolean
   media?: PostMedia[]
   createdAt: string
 }

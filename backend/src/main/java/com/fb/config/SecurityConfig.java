@@ -36,8 +36,8 @@ public class SecurityConfig {
      * Danh sách endpoint công khai không cần xác thực
      */
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**",
-            "/api/public/**",
+            "/auth/**",
+            "/public/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/v3/api-docs/**",

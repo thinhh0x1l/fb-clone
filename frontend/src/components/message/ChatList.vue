@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-list" :class="{ open: isOpen }">
+  <div class="chat-list">
     <div class="list-header">
       <h2>Chats</h2>
       <el-button circle size="small">

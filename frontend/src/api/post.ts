@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import type { Post, PaginatedResponse } from '@/types'
 
 export const postApi = {
   create(data: { content: string; visibility?: string; mediaUrls?: string[] }) {
@@ -40,5 +39,9 @@ export const postApi = {
 
   addComment(id: string, data: { content: string; parentId?: string }) {
     return request.post(`/posts/${id}/comments`, data).then((res) => res.data)
+  },
+
+  search(query: string, params?: { page?: number; size?: number }) {
+    return request.get('/posts/search', { params: { q: query, ...params } }).then((res) => res.data)
   },
 }

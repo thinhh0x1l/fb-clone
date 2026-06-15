@@ -16,7 +16,7 @@
       />
       
       <div v-if="hasMore" class="load-more">
-        <el-button :loading="loadingMore" @click="loadMore">
+        <el-button :loading="loading" @click="loadMore">
           Load more
         </el-button>
       </div>
@@ -25,38 +25,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import PostCard from './PostCard.vue'
-import type { Post } from '@/types'
+import { computed, onMounted } from 'vue'
+import { usePostStore } from '@/stores/post'
+import PostCard from '@/components/post/PostCard.vue'
 
-const loading = ref(true)
-const loadingMore = ref(false)
-const posts = ref<Post[]>([])
-const page = ref(0)
-const hasMore = ref(true)
+const props = defineProps<{
+  userId?: string
+}>()
+
+const postStore = usePostStore()
+
+const loading = computed(() => postStore.isLoading)
+const posts = computed(() => postStore.feedPosts)
+const hasMore = computed(() => postStore.hasMore)
 
 onMounted(() => {
-  fetchPosts()
+  if (props.userId) {
+    postStore.fetchUserPosts(props.userId)
+  } else {
+    postStore.fetchFeed()
+  }
 })
 
-async function fetchPosts() {
-  loading.value = true
-  try {
-    // TODO: Call API to fetch posts
-    posts.value = []
-    hasMore.value = false
-  } finally {
-    loading.value = false
-  }
-}
-
 async function loadMore() {
-  loadingMore.value = true
-  try {
-    page.value++
-    // TODO: Call API to fetch more posts
-  } finally {
-    loadingMore.value = false
+  if (props.userId) {
+    await postStore.fetchUserPosts(props.userId, postStore.currentPage + 1)
+  } else {
+    await postStore.fetchFeed(postStore.currentPage + 1)
   }
 }
 </script>

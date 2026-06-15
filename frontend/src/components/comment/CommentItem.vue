@@ -34,8 +34,8 @@
           v-for="reply in comment.replies"
           :key="reply.id"
           :comment="reply"
-          @reply="$emit('reply', $event)"
-          @delete="$emit('delete', $event)"
+          @reply="(e: any) => emit('reply', reply.id, e)"
+          @delete="(e: any) => emit('delete', e)"
         />
       </div>
     </div>

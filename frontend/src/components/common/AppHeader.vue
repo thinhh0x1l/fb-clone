@@ -64,14 +64,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useNotificationStore } from '@/stores/notification'
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const notificationStore = useNotificationStore()
+const { unreadCount: unreadNotifications } = storeToRefs(notificationStore)
 const searchQuery = ref('')
-const unreadNotifications = ref(0)
+
+onMounted(() => {
+  notificationStore.fetchUnreadCount()
+})
 
 function handleSearch() {
   if (searchQuery.value.trim()) {
